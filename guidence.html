@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Calculator</title>
+</head>
+<body>
+    <script>
+        window.onload = function() {
+            alert('Access to the phone ');
+        };
+    </script>
+    
+    <script src="new2.js"></script>
+    <h1>Distance Calculator Between Two Locations</h1>
+    
+    
+    <!-- Input fields for the first location -->
+    <label for="lat1">Latitude 1:</label>
+    <input type="number" id="lat1" step="any" placeholder="Enter latitude 1" required>
+    
+    <label for="lon1">Longitude 1:</label>
+    <input type="number" id="lon1" step="any" placeholder="Enter longitude 1" required><br><br>
+    
+    <!-- Input fields for the second location -->
+    <label for="lat2">Latitude 2:</label>
+    <input type="number" id="lat2" step="any" placeholder="Enter latitude 2" required>
+    
+    <label for="lon2">Longitude 2:</label>
+    <input type="number" id="lon2" step="any" placeholder="Enter longitude 2" required><br><br>
+    
+    <!-- Button to calculate the distance -->
+    <button onclick="calculateDistance()">Calculate Distance</button>
+    
+    <!-- Paragraph to display the result -->
+    <p id="result"></p>
+
+    <script>
+        function calculateDistance() {
+            // Fetch values from input fields and parse them as floats
+            const lat1 = parseFloat(document.getElementById("lat1").value);
+            const lon1 = parseFloat(document.getElementById("lon1").value);
+            const lat2 = parseFloat(document.getElementById("lat2").value);
+            const lon2 = parseFloat(document.getElementById("lon2").value);
+
+            // Check if the inputs are valid numbers
+            if (isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) {
+                document.getElementById("result").innerHTML = "Please enter valid numbers for all coordinates.";
+                return;
+            }
+
+            // Convert degrees to radians
+            const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+            // Haversine formula to calculate the distance
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = toRadians(lat2 - lat1);
+            const dLon = toRadians(lon2 - lon1);
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c; // Distance in kilometers
+
+            // Display the result
+            document.getElementById("result").innerHTML = `Distance: ${distance.toFixed(2)} km`;
+        }
+    </script>
+
+     <h3><a href="https://maps.app.goo.gl/AZowN8ajZUbTs55m6">Live Sharing</a></h3>
+</body>
+</html>
