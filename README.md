@@ -9,8 +9,11 @@ The features that we provide are –
 
 
 Features screenshot:
+Home page
 ![Screenshot (9)](https://github.com/user-attachments/assets/f6102197-0910-4557-9778-148975cee857)
-
+SOS through gestures
+![image](https://github.com/user-attachments/assets/edef77ef-740f-4485-ab62-50b5e91091bd)
+Heatmap
 ![image](https://github.com/user-attachments/assets/a2c23777-584c-43a5-a9da-94d7e3b11a5e)
-
+Incident report
 ![image](https://github.com/user-attachments/assets/cf768c76-6863-4723-b58f-dbf348bd0154)
