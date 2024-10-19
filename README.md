@@ -1,4 +1,4 @@
-# 🌟 Sahayak 🌟
+#   Sahayak 
 
 **Sahayak** is an innovative software solution designed to ensure and enhance women’s safety more efficiently than ever before. Our team has developed this tool to bridge the gaps left by existing safety solutions, providing crucial updates to smart devices.
 
