@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Detection with TensorFlow.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+<body>
+    <h1>Camera Access</h1>
+    <video id="webcam" autoplay playsinline width="640" height="480" style="display: none;"></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    
+
+    <script>
+        // Initialize video and canvas elements
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Load the COCO-SSD model
+        let model;
+        cocoSsd.load().then(loadedModel => {
+            model = loadedModel;
+            startVideoStream();
+        });
+
+        // Start the webcam video stream
+        function startVideoStream() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.onloadedmetadata = () => {
+                        video.play();
+                        detectFrame();
+                    };
+                })
+                .catch(error => {
+                    console.error("Error accessing the camera:", error);
+                });
+        }
+
+        // Detect objects in each video frame
+        function detectFrame() {
+            model.detect(video).then(predictions => {
+                renderPredictions(predictions);
+                requestAnimationFrame(detectFrame); // Continue detection
+            });
+        }
+
+        // Render detection results
+        function renderPredictions(predictions) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const women = [];
+            const men = [];
+            let personCount = 0;
+
+            predictions.forEach(prediction => {
+                if (prediction.class === 'person') {
+                    personCount++;
+                    const [x, y, width, height] = prediction.bbox;
+
+                    // Simple heuristic to classify gender based on bounding box aspect ratio
+                    const aspectRatio = width / height;
+                    if (aspectRatio < 0.5) {  // Narrower aspect ratio assumed as women
+                        women.push(prediction.bbox);
+                        ctx.strokeStyle = 'red';  // Red for women
+                    } else {
+                        men.push(prediction.bbox);
+                        ctx.strokeStyle = 'blue';  // Blue for men
+                    }
+
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, width, height);
+                    ctx.fillStyle = 'red';
+                    ctx.fillText('person', x, y > 10 ? y - 5 : y + 10);
+                }
+            });
+
+            // Check if any woman is surrounded by men
+            women.forEach(womanBox => {
+                if (isSurrounded(womanBox, men)) {
+                    ctx.fillStyle = 'yellow';
+                    ctx.fillText('Surrounded', womanBox[0], womanBox[1] - 20);
+                }
+            });
+
+            // Take a screenshot if more than 3 people are detected
+            if (personCount > 3) {
+                takeScreenshot();
+            }
+        }
+
+        // Check if a woman is surrounded by men
+        function isSurrounded(womanBox, menBoxes) {
+            let surroundedCount = 0;
+            menBoxes.forEach(manBox => {
+                // Check proximity of each man to the woman
+                if (Math.abs(manBox[0] - womanBox[0]) < 100 && Math.abs(manBox[1] - womanBox[1]) < 100) {
+                    surroundedCount += 1;
+                }
+            });
+            return surroundedCount >= 2; // Consider surrounded if there are at least 2 men nearby
+        }
+
+        // Take a screenshot of the current frame
+        function takeScreenshot() {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = screenshot_${new Date().toISOString().replace(/:/g, '-')}.png;
+            link.click();
+            console.log('Screenshot taken and downloaded.');
+        }
+    </script>
+    <script src="locafetching.js"></script>  
+</body>
+</html>
